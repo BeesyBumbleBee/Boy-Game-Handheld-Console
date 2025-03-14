@@ -1,0 +1,65 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\Matrix Keypad\matrix_keypad.uvproj
+Project File Date:  02/28/2025
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling storage_slave.c...
+compiling keypad_main.c...
+compiling serialcomms_slave.c...
+linking...
+*** WARNING L25: DATA TYPES DIFFERENT
+    SYMBOL:  _SendSlave
+    MODULE:  ..\..\Objects\Matrix Keypad\keypad_main.obj (KEYPAD_MAIN)
+   DEFINED:  ..\..\Objects\Matrix Keypad\serialcomms_slave.obj (SERIALCOMMS_SLAVE)
+*** WARNING L25: DATA TYPES DIFFERENT
+    SYMBOL:  InitSerial
+    MODULE:  ..\..\Objects\Matrix Keypad\keypad_main.obj (KEYPAD_MAIN)
+   DEFINED:  ..\..\Objects\Matrix Keypad\serialcomms_slave.obj (SERIALCOMMS_SLAVE)
+Program Size: data=16.2 xdata=0 const=448 code=912
+creating hex file from "..\..\Objects\Matrix Keypad\matrix_keypad"...
+"..\..\Objects\Matrix Keypad\matrix_keypad" - 0 Error(s), 2 Warning(s).
+Build target 'Target 1'
+compiling keypad_main.c...
+linking...
+*** WARNING L25: DATA TYPES DIFFERENT
+    SYMBOL:  _SendSlave
+    MODULE:  ..\..\Objects\Matrix Keypad\keypad_main.obj (KEYPAD_MAIN)
+   DEFINED:  ..\..\Objects\Matrix Keypad\serialcomms_slave.obj (SERIALCOMMS_SLAVE)
+*** WARNING L25: DATA TYPES DIFFERENT
+    SYMBOL:  InitSerial
+    MODULE:  ..\..\Objects\Matrix Keypad\keypad_main.obj (KEYPAD_MAIN)
+   DEFINED:  ..\..\Objects\Matrix Keypad\serialcomms_slave.obj (SERIALCOMMS_SLAVE)
+Program Size: data=16.2 xdata=0 const=448 code=912
+creating hex file from "..\..\Objects\Matrix Keypad\matrix_keypad"...
+"..\..\Objects\Matrix Keypad\matrix_keypad" - 0 Error(s), 2 Warning(s).
+Build target 'Target 1'
+compiling keypad_main.c...
+compiling serialcomms_slave.c...
+linking...
+*** WARNING L25: DATA TYPES DIFFERENT
+    SYMBOL:  _SendSlave
+    MODULE:  ..\..\Objects\Matrix Keypad\storage_slave.obj (STORAGE_SLAVE)
+   DEFINED:  ..\..\Objects\Matrix Keypad\serialcomms_slave.obj (SERIALCOMMS_SLAVE)
+*** WARNING L25: DATA TYPES DIFFERENT
+    SYMBOL:  _SendSlave
+    MODULE:  ..\..\Objects\Matrix Keypad\keypad_main.obj (KEYPAD_MAIN)
+   DEFINED:  ..\..\Objects\Matrix Keypad\serialcomms_slave.obj (SERIALCOMMS_SLAVE)
+*** WARNING L25: DATA TYPES DIFFERENT
+    SYMBOL:  InitSerial
+    MODULE:  ..\..\Objects\Matrix Keypad\keypad_main.obj (KEYPAD_MAIN)
+   DEFINED:  ..\..\Objects\Matrix Keypad\serialcomms_slave.obj (SERIALCOMMS_SLAVE)
+Program Size: data=16.2 xdata=0 const=448 code=912
+creating hex file from "..\..\Objects\Matrix Keypad\matrix_keypad"...
+"..\..\Objects\Matrix Keypad\matrix_keypad" - 0 Error(s), 3 Warning(s).
+Build target 'Target 1'
+compiling storage_slave.c...
+compiling keypad_main.c...
+linking...
+Program Size: data=16.2 xdata=0 const=448 code=912
+creating hex file from "..\..\Objects\Matrix Keypad\matrix_keypad"...
+"..\..\Objects\Matrix Keypad\matrix_keypad" - 0 Error(s), 0 Warning(s).

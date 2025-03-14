@@ -1,0 +1,10 @@
+"..\..\Objects\LCD Display\storage_master.obj",
+"..\..\Objects\LCD Display\asteroid_belt.obj",
+"..\..\Objects\LCD Display\earth_defense.obj",
+"..\..\Objects\LCD Display\lcd.obj",
+"..\..\Objects\LCD Display\lcddisp_main.obj",
+"..\..\Objects\LCD Display\serialcomms_master.obj" 
+TO "..\..\Objects\LCD Display\lcd_display" 
+
+PRINT(".\lcd_display.map") CLASSES (CODE (C:0x0-C:0x1FFF), CONST (C:0x0-C:0x1FFF), 
+ECODE (C:0x0-C:0x1FFF), HCONST (C:0x0-C:0x1FFF)) 

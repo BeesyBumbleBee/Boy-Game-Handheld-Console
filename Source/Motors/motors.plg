@@ -1,0 +1,17 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\Motors\motors.uvproj
+Project File Date:  02/28/2025
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling storage_slave.c...
+compiling motors_main.c...
+compiling serialcomms_slave.c...
+linking...
+Program Size: data=19.5 xdata=0 const=448 code=1042
+creating hex file from "..\..\Objects\Motors\motors"...
+"..\..\Objects\Motors\motors" - 0 Error(s), 0 Warning(s).

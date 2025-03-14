@@ -1,0 +1,247 @@
+C51 COMPILER V9.51   LCD                                                                   02/28/2025 18:58:10 PAGE 1   
+
+
+C51 COMPILER V9.51, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN ..\..\Objects\LCD Display\lcd.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE lcd.c OMF2 BROWSE DEBUG OBJECT(..\..\Objects\LCD Display\lcd.obj)
+
+line level    source
+
+   1          // --- Definitions ---
+   2          
+   3          sfr  P2    = 0xA0;
+   4          sbit P2_6  = P2^6;
+   5          sbit P2_5  = P2^5;
+   6          sbit P2_4  = P2^4;
+   7          sbit P2_3  = P2^3;
+   8          sbit P2_2  = P2^2;
+   9          sbit P2_1  = P2^1;
+  10          sbit P2_0  = P2^0;
+  11          
+  12          #define False                           0  
+  13          #define True                            1
+  14          
+  15          // LCD connections
+  16          #define LCD_RS    P2_4         /* p1.4 LCD Register Select line           */
+  17          #define LCD_RW    P2_5         /* p1.5 LCD Read / Write line              */
+  18          #define LCD_E     P2_6         /* p1.6 LCD Enable line                    */
+  19          #define LCD_DB4   P2_0         /* high nibble of port 1 is used for data  */
+  20          #define LCD_DB5   P2_1         /* high nibble of port 1 is used for data  */
+  21          #define LCD_DB6   P2_2         /* high nibble of port 1 is used for data  */
+  22          #define LCD_DB7   P2_3         /* high nibble of port 1 is used for data  */
+  23          
+  24          // LCd commands (as specified by LCD driver documentation)
+  25          #define LCD_CONFIG                    0x28
+  26          #define LCD_CLEAR                     0x01
+  27          #define LCD_HOME                      0x02
+  28          #define LCD_ENTRY_MODE            0x06
+  29          #define LCD_DISPLAY_OFF           0x08
+  30          #define LCD_CURSOR_ON             0x0A
+  31          #define LCD_DISPLAY_ON            0x0C
+  32          #define LCD_CURSOR_BLINK          0x0D
+  33          #define LCD_CURSOR_LINE           0x0E
+  34          #define LCD_CURSOR_COM            0x0F
+  35          #define LCD_CURSOR_LEFT           0x10
+  36          #define LCD_CURSOR_RIGHT          0x14
+  37          #define LCD_SHIFT_LEFT            0x18
+  38          #define LCD_SHIFT_RIGHT           0x1C
+  39          #define LCD_SET_CGRAM_ADDR        0x40
+  40          #define LCD_SET_DDRAM_ADDR        0x80
+  41          
+  42          
+  43          // --- Function Declarations ---
+  44          void LCD_WriteControl (unsigned char cmd);
+  45          void LCD_WriteData (unsigned char cmd);
+  46          void LCD_Cursor (char row, char column);
+  47          void LCD_DisplayScreen (void);
+  48          void LCD_DisplayCharacterAt(char a_char, char row, char column);
+  49          void LCD_NewCharacter(char pixels, unsigned char row, unsigned char addr);
+  50          void LCD_Init(void);
+  51          
+  52          
+  53          // lcddisp_main.c
+  54          extern void Sleep(unsigned int time);
+  55          
+C51 COMPILER V9.51   LCD                                                                   02/28/2025 18:58:10 PAGE 2   
+
+  56          
+  57          // --- Global Variables ---
+  58          unsigned char data Screen[] =    "                "
+  59                                                                           "                "
+  60                                                                           "                "
+  61                                                                           "                ";
+  62          
+  63          
+  64          // --- Function Definitions ---
+  65          // Sending control commands to LCD driver (4-bit communication)
+  66          void LCD_WriteControl (unsigned char cmd)
+  67          {
+  68   1              unsigned char LCD_comm = 0;
+  69   1              static bit LCD_ready;
+  70   1      
+  71   1              LCD_RS = False;
+  72   1              LCD_RW = False;
+  73   1      
+  74   1              LCD_comm = cmd >> 4;
+  75   1              P2 &= 0xF0;
+  76   1              P2 |= LCD_comm;
+  77   1      
+  78   1              LCD_E = True;
+  79   1              LCD_E = False;
+  80   1      
+  81   1              LCD_comm = cmd & 0x0F;  
+  82   1              P2 &=0xF0;      // P2 = P2 & 0xF0
+  83   1              P2 |= LCD_comm;
+  84   1      
+  85   1              LCD_E = True;
+  86   1              LCD_E = False;
+  87   1      
+  88   1              P2 |= 0x0F;     // P2 = P2 | 0x0F
+  89   1      
+  90   1              LCD_RW = True;
+  91   1              LCD_RS = False;
+  92   1      
+  93   1      
+  94   1              LCD_ready = 1;
+  95   1              while (LCD_ready == 1)
+  96   1              {
+  97   2                      LCD_E = True;
+  98   2                      LCD_ready = LCD_DB7;
+  99   2                      LCD_E = False;
+ 100   2                      LCD_E = True;
+ 101   2                      LCD_E = False;
+ 102   2              }
+ 103   1      }
+ 104          
+ 105          // Sending data commands to LCD driver (4-bit communication)
+ 106          void LCD_WriteData (unsigned char cmd)
+ 107          {
+ 108   1              unsigned char LCD_data = 0;
+ 109   1              static bit LCD_ready;
+ 110   1      
+ 111   1              LCD_RS = True;
+ 112   1              LCD_RW = False;
+ 113   1      
+ 114   1              LCD_data = cmd >> 4;
+ 115   1              P2 &= 0xF0;
+ 116   1              P2 |= LCD_data;
+ 117   1      
+C51 COMPILER V9.51   LCD                                                                   02/28/2025 18:58:10 PAGE 3   
+
+ 118   1              LCD_E = True;
+ 119   1              LCD_E = False;
+ 120   1      
+ 121   1              LCD_data = cmd & 0x0F;  
+ 122   1              P2 &=0xF0;   
+ 123   1              P2 |= LCD_data;
+ 124   1      
+ 125   1              LCD_E = True;
+ 126   1              LCD_E = False;
+ 127   1      
+ 128   1              P2 |= 0x0F;
+ 129   1      
+ 130   1              LCD_RW = True;
+ 131   1              LCD_RS = False;
+ 132   1      
+ 133   1              LCD_ready = 1;
+ 134   1              while (LCD_ready == 1)
+ 135   1              {
+ 136   2                      LCD_E = True;
+ 137   2                      LCD_ready = LCD_DB7;
+ 138   2                      LCD_E   = False;
+ 139   2                      LCD_E   = True;
+ 140   2                      LCD_E   = False;
+ 141   2              }
+ 142   1       }
+ 143          
+ 144          
+ 145          /* How LCD driver interprets position of cursor 
+ 146          *     1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16
+ 147          *    ---------------------------------------------------------------
+ 148          * 1 |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+ 149          * 2 |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+ 150          * 3 |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+ 151          * 4 |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+ 152          *    ---------------------------------------------------------------
+ 153          */
+ 154          void LCD_Cursor (char row, char column)
+ 155           {
+ 156   1         if (row == 1) LCD_WriteControl (0x80 + column - 1);
+ 157   1         if (row == 2) LCD_WriteControl (0xc0 + column - 1);
+ 158   1         if (row == 3) LCD_WriteControl (0x90 + column - 1);
+ 159   1         if (row == 4) LCD_WriteControl (0xd0 + column - 1);
+ 160   1       }
+ 161          
+ 162          // Display the global Screen[] variable on the LCD
+ 163          void LCD_DisplayScreen (void)
+ 164          {
+ 165   1              unsigned char i;
+ 166   1              for (i = 0; i < 64; i++) {
+ 167   2                      LCD_Cursor((i >> 4) + 1, (i % 16) + 1);
+ 168   2                      LCD_WriteData(*(Screen + i));
+ 169   2              }
+ 170   1      }
+ 171          
+ 172          // Display given character at a specified cell
+ 173          void LCD_DisplayCharacterAt(char a_char, char row, char column) {
+ 174   1              LCD_Cursor(row, column);
+ 175   1              LCD_WriteData(a_char);
+ 176   1      }
+ 177          
+ 178          
+ 179          // Character is 7 rows of 5 bit pixels (7 chars)
+C51 COMPILER V9.51   LCD                                                                   02/28/2025 18:58:10 PAGE 4   
+
+ 180          // addr + 8 -> CGRAMAddr 
+ 181          void LCD_NewCharacter(char pixels, unsigned char row, unsigned char addr) {
+ 182   1              LCD_WriteControl(LCD_SET_CGRAM_ADDR | (row + (8*addr)));
+ 183   1              LCD_WriteData(pixels);
+ 184   1      }
+ 185          
+ 186          // Initialize LCD with 4 rows and 4 bit communication
+ 187          void LCD_Init(void)
+ 188           {
+ 189   1         Sleep(5);
+ 190   1         P2 = 0x83;
+ 191   1         LCD_E   = True;
+ 192   1         Sleep(1);
+ 193   1         LCD_E   = False;
+ 194   1         Sleep(2);
+ 195   1         LCD_E   = True;
+ 196   1         Sleep(1);
+ 197   1         LCD_E   = False;
+ 198   1         Sleep(1);
+ 199   1         LCD_E   = True;
+ 200   1         Sleep(1);
+ 201   1         LCD_E   = False;
+ 202   1         Sleep(1);
+ 203   1         LCD_DB4 = False;
+ 204   1         LCD_E   = True;
+ 205   1         Sleep(1);
+ 206   1         LCD_E   = False;
+ 207   1         Sleep(1);
+ 208   1         LCD_WriteControl(LCD_CONFIG);     
+ 209   1         LCD_WriteControl(LCD_CLEAR);      
+ 210   1         LCD_WriteControl(LCD_DISPLAY_OFF);
+ 211   1         LCD_WriteControl(LCD_DISPLAY_ON); 
+ 212   1         LCD_WriteControl(LCD_ENTRY_MODE); 
+ 213   1         LCD_WriteControl(LCD_CLEAR);      
+ 214   1       }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    334    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     65    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

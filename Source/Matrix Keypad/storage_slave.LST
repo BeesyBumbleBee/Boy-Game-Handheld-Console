@@ -1,0 +1,269 @@
+C51 COMPILER V9.51   STORAGE_SLAVE                                                         02/28/2025 18:32:03 PAGE 1   
+
+
+C51 COMPILER V9.51, COMPILATION OF MODULE STORAGE_SLAVE
+OBJECT MODULE PLACED IN ..\..\Objects\Matrix Keypad\storage_slave.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE storage_slave.c OMF2 BROWSE DEBUG OBJECT(..\..\Objects\Matrix Keypad\storag
+                    -e_slave.obj)
+
+line level    source
+
+   1          
+   2          // --- Function Declarations ---
+   3          void AccessStorage  (unsigned char addr);
+   4          void Send16ByteData (unsigned char *stored_data);
+   5          void Send8ByteData  (const unsigned char *stored_data);
+   6          
+   7          // serialcomms_slave.c
+   8          extern void SendSlave(unsigned char data_send);
+   9          extern void InitSerial();
+  10          
+  11          // --- Global Variables ---
+  12          // serialcomms_slave.c
+  13          extern unsigned char data RECV;
+  14          extern bit data RECF;
+  15          extern bit data SENF;
+  16          
+  17          
+  18          // --- Global Constants ---
+  19          
+  20          // 16 byte data
+  21          static const unsigned char code Scr_0A0[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  22          static const unsigned char code Scr_0A1[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  23          static const unsigned char code Scr_0A2[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  24          static const unsigned char code Scr_0A3[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  25          
+  26          static const unsigned char code Scr_0B0[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  27          static const unsigned char code Scr_0B1[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  28          static const unsigned char code Scr_0B2[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  29          static const unsigned char code Scr_0B3[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  30          
+  31          static const unsigned char code Scr_1A0[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  32          static const unsigned char code Scr_1A1[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  33          static const unsigned char code Scr_1A2[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  34          static const unsigned char code Scr_1A3[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  35          
+  36          static const unsigned char code Scr_2A0[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  37          static const unsigned char code Scr_2A1[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  38          static const unsigned char code Scr_2A2[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  39          static const unsigned char code Scr_2A3[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+C51 COMPILER V9.51   STORAGE_SLAVE                                                         02/28/2025 18:32:03 PAGE 2   
+
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20}; 
+  40          
+  41          static const unsigned char code Scr_3A0[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  42          static const unsigned char code Scr_3A1[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  43          static const unsigned char code Scr_3A2[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  44          static const unsigned char code Scr_3A3[16] = {0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
+             - 0x20, 0x20, 0x20, 0x20, 0x20, 0x20};
+  45          
+  46          // 8 byte data
+  47          static const unsigned char code Char_2A0[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  48          static const unsigned char code Char_2A1[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  49          static const unsigned char code Char_2A2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  50          static const unsigned char code Char_2A3[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  51          static const unsigned char code Char_2B0[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  52          static const unsigned char code Char_2B1[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  53          static const unsigned char code Char_2B2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  54          static const unsigned char code Char_2B3[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  55          
+  56          static const unsigned char code Char_3A0[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  57          static const unsigned char code Char_3A1[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  58          static const unsigned char code Char_3A2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  59          static const unsigned char code Char_3A3[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  60          static const unsigned char code Char_3B0[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  61          static const unsigned char code Char_3B1[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  62          static const unsigned char code Char_3B2[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  63          static const unsigned char code Char_3B3[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  64          
+  65          
+  66          // --- Function Definitions ---
+  67          void Send16ByteData(const unsigned char *stored_data) {
+  68   1              unsigned char i;
+  69   1              for (i = 0; i < 15; i++) {
+  70   2                      SendSlave(*(stored_data + i));
+  71   2                      SENF = 0;
+  72   2                      while (!SENF) {;}
+  73   2                      SENF = 0;
+  74   2                      RECF = 0;
+  75   2                      while (!RECF) {;}
+  76   2                      RECF = 0;
+  77   2              }
+  78   1              SendSlave(*(stored_data + 15));
+  79   1      }
+  80          
+  81          void Send8ByteData(const unsigned char *stored_data) {
+  82   1              unsigned char i;
+  83   1              for (i = 0; i < 7; i++) {
+  84   2                      SendSlave(*(stored_data + i));
+  85   2                      SENF = 0;
+  86   2                      while (!SENF) {;}
+  87   2                      SENF = 0;
+  88   2                      RECF = 0;
+  89   2                      while (!RECF) {;}
+  90   2                      RECF = 0;
+  91   2              }
+  92   1              SendSlave(*(stored_data + 15));
+  93   1      }
+  94          
+  95          
+  96          void AccessStorage(unsigned char addr) {
+C51 COMPILER V9.51   STORAGE_SLAVE                                                         02/28/2025 18:32:03 PAGE 3   
+
+  97   1              switch (addr) {
+  98   2                      case (0x80):
+  99   2                              Send16ByteData(Scr_0A0);
+ 100   2                      break;
+ 101   2                      case (0x81):
+ 102   2                              Send16ByteData(Scr_0A1);
+ 103   2                      break;
+ 104   2                      case (0x82):
+ 105   2                              Send16ByteData(Scr_0A2);
+ 106   2                      break;
+ 107   2                      case (0x83):
+ 108   2                              Send16ByteData(Scr_0A3);
+ 109   2                      break;
+ 110   2                      
+ 111   2                      case (0x84):
+ 112   2                              Send16ByteData(Scr_0B0);
+ 113   2                      break;
+ 114   2                      case (0x85):
+ 115   2                              Send16ByteData(Scr_0B1);
+ 116   2                      break;
+ 117   2                      case (0x86):
+ 118   2                              Send16ByteData(Scr_0B2);
+ 119   2                      break;
+ 120   2                      case (0x87):
+ 121   2                              Send16ByteData(Scr_0B3);
+ 122   2                      break;
+ 123   2                      
+ 124   2                      case (0x88):
+ 125   2                              Send16ByteData(Scr_1A0);
+ 126   2                      break;
+ 127   2                      case (0x89):
+ 128   2                              Send16ByteData(Scr_1A1);
+ 129   2                      break;
+ 130   2                      case (0x8A):
+ 131   2                              Send16ByteData(Scr_1A2);
+ 132   2                      break;
+ 133   2                      case (0x8B):
+ 134   2                              Send16ByteData(Scr_1A3);
+ 135   2                      break;
+ 136   2                      
+ 137   2                      case (0x90):
+ 138   2                              Send16ByteData(Scr_2A0);
+ 139   2                      break;
+ 140   2                      case (0x91):
+ 141   2                              Send16ByteData(Scr_2A1);
+ 142   2                      break;
+ 143   2                      case (0x92):
+ 144   2                              Send16ByteData(Scr_2A2);
+ 145   2                      break;
+ 146   2                      case (0x93):
+ 147   2                              Send16ByteData(Scr_2A3);
+ 148   2                      break;
+ 149   2                      
+ 150   2                      case (0xA0):
+ 151   2                              Send16ByteData(Scr_3A0);
+ 152   2                      break;
+ 153   2                      case (0xA1):
+ 154   2                              Send16ByteData(Scr_3A1);
+ 155   2                      break;
+ 156   2                      case (0xA2):
+ 157   2                              Send16ByteData(Scr_3A2);
+ 158   2                      break;
+C51 COMPILER V9.51   STORAGE_SLAVE                                                         02/28/2025 18:32:03 PAGE 4   
+
+ 159   2                      case (0xA3):
+ 160   2                              Send16ByteData(Scr_3A3);
+ 161   2                      break;
+ 162   2                      
+ 163   2                      case (0xD0):
+ 164   2                              Send8ByteData(Char_2A0);
+ 165   2                      break;
+ 166   2                      case (0xD1):
+ 167   2                              Send8ByteData(Char_2A1);
+ 168   2                      break;
+ 169   2                      case (0xD2):
+ 170   2                              Send8ByteData(Char_2A2);
+ 171   2                      break;
+ 172   2                      case (0xD3):
+ 173   2                              Send8ByteData(Char_2A3);
+ 174   2                      break;
+ 175   2                      case (0xD4):
+ 176   2                              Send8ByteData(Char_2B0);
+ 177   2                      break;
+ 178   2                      case (0xD5):
+ 179   2                              Send8ByteData(Char_2B1);
+ 180   2                      break;
+ 181   2                      case (0xD6):
+ 182   2                              Send8ByteData(Char_2B2);
+ 183   2                      break;
+ 184   2                      case (0xD7):
+ 185   2                              Send8ByteData(Char_2B3);
+ 186   2                      break;
+ 187   2                      
+ 188   2                      case (0xE0):
+ 189   2                              Send8ByteData(Char_3A0);
+ 190   2                      break;
+ 191   2                      case (0xE1):
+ 192   2                              Send8ByteData(Char_3A1);
+ 193   2                      break;
+ 194   2                      case (0xE2):
+ 195   2                              Send8ByteData(Char_3A2);
+ 196   2                      break;
+ 197   2                      case (0xE3):
+ 198   2                              Send8ByteData(Char_3A3);
+ 199   2                      break;
+ 200   2                      case (0xE4):
+ 201   2                              Send8ByteData(Char_3B0);
+ 202   2                      break;
+ 203   2                      case (0xE5):
+ 204   2                              Send8ByteData(Char_3B1);
+ 205   2                      break;
+ 206   2                      case (0xE6):
+ 207   2                              Send8ByteData(Char_3B2);
+ 208   2                      break;
+ 209   2                      case (0xE7):
+ 210   2                              Send8ByteData(Char_3B3);
+ 211   2                      break;
+ 212   2              }
+ 213   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    544    ----
+   CONSTANT SIZE    =    448    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+C51 COMPILER V9.51   STORAGE_SLAVE                                                         02/28/2025 18:32:03 PAGE 5   
+
+   DATA SIZE        =   ----       8
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

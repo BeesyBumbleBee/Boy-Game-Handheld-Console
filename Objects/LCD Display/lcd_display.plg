@@ -1,0 +1,213 @@
+Rebuild Project 'lcd_display' - Target 'Target 1'
+compiling storage_master.c...
+compiling asteroid_belt.c...
+compiling earth_defense.c...
+compiling lcd.c...
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcd.c(165): warning C206: 'LCD_DisplayRow': missing function-prototype
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcd.c(165): error C267: 'LCD_DisplayRow': requires ANSI-style prototype
+compiling lcddisp_main.c...
+compiling serialcomms_master.c...
+Target not created
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcd.c...
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcd.c(168): warning C214: 'Argument': conversion: pointer to non-pointer
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcd.c(183): warning C206: 'LCD_DisplayCharacter': missing function-prototype
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcd.c(183): error C267: 'LCD_DisplayCharacter': requires ANSI-style prototype
+Target not created
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcd.c...
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcd.c(183): warning C206: 'LCD_DisplayCharacter': missing function-prototype
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcd.c(183): error C267: 'LCD_DisplayCharacter': requires ANSI-style prototype
+Target not created
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcd.c...
+linking...
+*** WARNING L16: UNCALLED FUNCTION, IGNORED FOR OVERLAY PROCESS
+    NAME:    LCD_DISPLAYSCREEN/LCD
+*** WARNING L16: UNCALLED FUNCTION, IGNORED FOR OVERLAY PROCESS
+    NAME:    _LCD_DISPLAYCHARACTERAT/LCD
+*** WARNING L16: UNCALLED FUNCTION, IGNORED FOR OVERLAY PROCESS
+    NAME:    _LCD_NEWCHARACTER/LCD
+*** WARNING L16: UNCALLED FUNCTION, IGNORED FOR OVERLAY PROCESS
+    NAME:    LCD_INIT/LCD
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\storage_master.obj (STORAGE_MASTER)
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  _LCD_NewCharacter
+    MODULE:  ..\..\Objects\LCD Display\storage_master.obj (STORAGE_MASTER)
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_NewCharacter
+    MODULE:  ..\..\Objects\LCD Display\storage_master.obj (STORAGE_MASTER)
+    ADDRESS: 100085FH
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\storage_master.obj (STORAGE_MASTER)
+    ADDRESS: 10007C6H
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  LCD_DisplayScreen
+    MODULE:  ..\..\Objects\LCD Display\asteroid_belt.obj (ASTEROID_BELT)
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  LCD_DisplayScreen
+    MODULE:  ..\..\Objects\LCD Display\asteroid_belt.obj (ASTEROID_BELT)
+    ADDRESS: 1000521H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  LCD_DisplayScreen
+    MODULE:  ..\..\Objects\LCD Display\asteroid_belt.obj (ASTEROID_BELT)
+    ADDRESS: 100056EH
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  LCD_DisplayScreen
+    MODULE:  ..\..\Objects\LCD Display\earth_defense.obj (EARTH_DEFENSE)
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  LCD_DisplayScreen
+    MODULE:  ..\..\Objects\LCD Display\earth_defense.obj (EARTH_DEFENSE)
+    ADDRESS: 10003ADH
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  LCD_DisplayScreen
+    MODULE:  ..\..\Objects\LCD Display\earth_defense.obj (EARTH_DEFENSE)
+    ADDRESS: 1000412H
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  _LCD_DisplayRow
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  LCD_Init
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+*** ERROR L127: UNRESOLVED EXTERNAL SYMBOL
+    SYMBOL:  LCD_DisplayScreen
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  LCD_Init
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 1000267H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  LCD_DisplayScreen
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 100028AH
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 1000296H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 100029FH
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 10002B2H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  LCD_DisplayScreen
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 10001C7H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 10001E7H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 10001F7H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 1000209H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 1000229H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 1000239H
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayCharacterAt
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 100024BH
+*** ERROR L128: REFERENCE MADE TO UNRESOLVED EXTERNAL
+    SYMBOL:  _LCD_DisplayRow
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+    ADDRESS: 10009C1H
+Program Size: data=87.1 xdata=0 const=64 code=2707
+Target not created
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcddisp_main.c...
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(13): error C141: syntax error near 'static'
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(14): error C141: syntax error near 'static'
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(15): error C141: syntax error near 'static'
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(16): error C141: syntax error near 'static'
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(17): error C141: syntax error near 'static'
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(18): error C141: syntax error near 'static'
+Target not created
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcd.c...
+compiling lcddisp_main.c...
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(190): warning C206: 'LCD_DisplayRow': missing function-prototype
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(190): error C267: 'LCD_DisplayRow': requires ANSI-style prototype
+Target not created
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcddisp_main.c...
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(184): warning C280: 'i': unreferenced local variable
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(185): warning C280: 'welcome_screen': unreferenced local variable
+linking...
+*** WARNING L16: UNCALLED FUNCTION, IGNORED FOR OVERLAY PROCESS
+    NAME:    ?CO?LCDDISP_MAIN
+Program Size: data=87.1 xdata=0 const=64 code=2674
+creating hex file from "..\..\Objects\LCD Display\lcd_display"...
+"..\..\Objects\LCD Display\lcd_display" - 0 Error(s), 3 Warning(s).
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcddisp_main.c...
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(191): warning C206: 'LCD_WriteData': missing function-prototype
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcddisp_main.c(191): error C267: 'LCD_WriteData': requires ANSI-style prototype
+Target not created
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcddisp_main.c...
+linking...
+Program Size: data=87.1 xdata=0 const=64 code=2708
+creating hex file from "..\..\Objects\LCD Display\lcd_display"...
+"..\..\Objects\LCD Display\lcd_display" - 0 Error(s), 0 Warning(s).
+  
+Build Project 'segment_display' - Target 'Target 1'
+linking...
+Program Size: data=32.2 xdata=2 const=197 code=712
+creating hex file from "..\..\Objects\7 Segment Display\segment_display"...
+"..\..\Objects\7 Segment Display\segment_display" - 0 Error(s), 0 Warning(s).
+  
+Build Project 'lcd_display' - Target 'Target 1'
+linking...
+Program Size: data=87.1 xdata=0 const=64 code=2708
+creating hex file from "..\..\Objects\LCD Display\lcd_display"...
+"..\..\Objects\LCD Display\lcd_display" - 0 Error(s), 0 Warning(s).
+  
+Build Project 'matrix_keypad' - Target 'Target 1'
+linking...
+Program Size: data=16.2 xdata=0 const=448 code=912
+creating hex file from "..\..\Objects\Matrix Keypad\matrix_keypad"...
+"..\..\Objects\Matrix Keypad\matrix_keypad" - 0 Error(s), 0 Warning(s).
+  
+Build Project 'motors' - Target 'Target 1'
+linking...
+Program Size: data=19.5 xdata=0 const=448 code=1042
+creating hex file from "..\..\Objects\Motors\motors"...
+"..\..\Objects\Motors\motors" - 0 Error(s), 0 Warning(s).
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcd.c...
+compiling lcddisp_main.c...
+linking...
+Program Size: data=87.1 xdata=0 const=64 code=2712
+creating hex file from "..\..\Objects\LCD Display\lcd_display"...
+"..\..\Objects\LCD Display\lcd_display" - 0 Error(s), 0 Warning(s).
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcd.c...
+linking...
+Program Size: data=87.1 xdata=0 const=64 code=2712
+creating hex file from "..\..\Objects\LCD Display\lcd_display"...
+"..\..\Objects\LCD Display\lcd_display" - 0 Error(s), 0 Warning(s).
+Build Project 'lcd_display' - Target 'Target 1'
+compiling lcddisp_main.c...
+linking...
+Program Size: data=87.1 xdata=0 const=64 code=2712
+creating hex file from "..\..\Objects\LCD Display\lcd_display"...
+"..\..\Objects\LCD Display\lcd_display" - 0 Error(s), 0 Warning(s).

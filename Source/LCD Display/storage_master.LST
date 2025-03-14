@@ -1,0 +1,71 @@
+C51 COMPILER V9.51   STORAGE_MASTER                                                        02/28/2025 18:45:56 PAGE 1   
+
+
+C51 COMPILER V9.51, COMPILATION OF MODULE STORAGE_MASTER
+OBJECT MODULE PLACED IN ..\..\Objects\LCD Display\storage_master.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE storage_master.c OMF2 BROWSE DEBUG OBJECT(..\..\Objects\LCD Display\storage
+                    -_master.obj)
+
+line level    source
+
+   1          
+   2          // --- Function Declarations ---
+   3          // lcd.c
+   4          extern void LCD_DisplayCharacterAt(char a_char, char row, char column);
+   5          extern void LCD_NewCharacter(char pixels, unsigned char row, unsigned char addr);
+   6          
+   7          // serialcomms_master.c
+   8          extern void SendToSlave(char slave_addr, char send_data);
+   9          extern void WaitForResponse(void);
+  10          extern void WaitForSend(void);
+  11          
+  12          
+  13          // --- Global Variables ---
+  14          // lcd.c
+  15          extern char data Screen[];
+  16          
+  17          // serialcomms_master.c
+  18          extern unsigned char data RECV;
+  19          
+  20          
+  21          // --- Function Definitions ---
+  22          void LoadCharacters(unsigned char slave_addr, unsigned char id) {
+  23   1              unsigned char data __storage_iterator;
+  24   1              unsigned char instr = 0xC0 | (id << 3);
+  25   1              for (__storage_iterator = 0; __storage_iterator < 64; __storage_iterator++) {
+  26   2                      SendToSlave(slave_addr, instr + (__storage_iterator / 8));
+  27   2                      WaitForResponse();
+  28   2                      LCD_NewCharacter(RECV, __storage_iterator % 8, __storage_iterator / 8);
+  29   2              }
+  30   1      }
+  31          
+  32          void LoadScreen(unsigned char slave_addr, unsigned char id, bit alt_scr, bit show_loading) {
+  33   1              unsigned char data __storage_iterator;
+  34   1              unsigned char instr = 0x80 | (id << 3) | ((unsigned char)alt_scr << 2);
+  35   1              for (__storage_iterator = 0; __storage_iterator < 64; __storage_iterator++) {
+  36   2                      if (show_loading) LCD_DisplayCharacterAt('#', 4 ,(__storage_iterator / 4) + 1);
+  37   2                      SendToSlave(slave_addr, instr + (__storage_iterator / 16));
+  38   2                      WaitForResponse();
+  39   2                      Screen[__storage_iterator] = RECV;
+  40   2              }
+  41   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    137    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       2
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+C51 COMPILER V9.51   STORAGE_MASTER                                                        02/28/2025 18:45:56 PAGE 2   
+
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

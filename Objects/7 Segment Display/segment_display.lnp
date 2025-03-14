@@ -1,0 +1,6 @@
+"..\..\Objects\7 Segment Display\segdisp_main.obj",
+"..\..\Objects\7 Segment Display\serialcomms_slave.obj" 
+TO "..\..\Objects\7 Segment Display\segment_display" 
+
+PRINT(".\segment_display.map") CLASSES (CODE (C:0x0-C:0x1FFF), CONST (C:0x0-C:0x1FFF), 
+ECODE (C:0x0-C:0x1FFF), HCONST (C:0x0-C:0x1FFF)) 

@@ -1,0 +1,7 @@
+"..\..\Objects\Matrix Keypad\storage_slave.obj",
+"..\..\Objects\Matrix Keypad\keypad_main.obj",
+"..\..\Objects\Matrix Keypad\serialcomms_slave.obj" 
+TO "..\..\Objects\Matrix Keypad\matrix_keypad" 
+
+PRINT(".\matrix_keypad.map") CLASSES (CODE (C:0x0-C:0x1FFF), CONST (C:0x0-C:0x1FFF), 
+ECODE (C:0x0-C:0x1FFF), HCONST (C:0x0-C:0x1FFF)) 

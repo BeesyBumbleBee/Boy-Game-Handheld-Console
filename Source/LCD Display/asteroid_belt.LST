@@ -1,0 +1,278 @@
+C51 COMPILER V9.51   ASTEROID_BELT                                                         02/28/2025 18:45:56 PAGE 1   
+
+
+C51 COMPILER V9.51, COMPILATION OF MODULE ASTEROID_BELT
+OBJECT MODULE PLACED IN ..\..\Objects\LCD Display\asteroid_belt.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE asteroid_belt.c OMF2 BROWSE DEBUG OBJECT(..\..\Objects\LCD Display\asteroid
+                    -_belt.obj)
+
+line level    source
+
+   1          #include "addresses.h"
+   2          
+   3          sfr TL1 = 0x8B;
+   4          
+   5          // --- Definitions ---
+   6          #define AB_EMPTY ' '
+   7          #define AB_PLAYER_HEAD 0
+   8          #define AB_PLAYER_TAIL 1
+   9          #define AB_ASTEROID_ONE 2
+  10          #define AB_ASTEROID_TWO 3
+  11          #define AB_EXPLOSION 4
+  12          
+  13          
+  14          // --- Function Declarations ---
+  15          void AB_MovePlayer(unsigned char key_pressed);
+  16          void AB_MovePlayerUp(void);
+  17          void AB_MovePlayerDown(void);
+  18          void AB_CheckScore(void);
+  19          void AB_MoveAsteroids(void);
+  20          void AB_SpawnAsteroids(void);
+  21          
+  22          // lcddispl_main.c
+  23          extern void Sleep(unsigned int time);
+  24          extern unsigned char Rand(unsigned char seed);
+  25          
+  26          // lcd.c
+  27          extern void LCD_NewCharacter(char pixels, unsigned char row, unsigned char addr);
+  28          extern void LCD_SetScreen(char *new_screen);
+  29          extern void LCD_DisplayScreen(void);
+  30          
+  31          // serialcomms_master.c
+  32          extern void SendToSlave(char slave_addr, char send_data);
+  33          extern void WaitForResponse(void);
+  34          extern void WaitForSend(void);
+  35          
+  36          // storage_master.c
+  37          void LoadCharacters(unsigned char slave_addr, unsigned char id);
+  38          void LoadScreen(unsigned char slave_addr, unsigned char id, bit alt_scr, bit show_loading);
+  39          
+  40          // --- Global Variables ---
+  41          unsigned char data AB_difficulty;
+  42          bit AB_GameLoop;
+  43          
+  44          // lcddisp_main.c
+  45          extern bit enable_haptics;
+  46          
+  47          // lcd.c
+  48          extern char data Screen[];
+  49          
+  50          // serialcomms_master.c
+  51          extern unsigned char data RECV;
+  52          extern bit RECF;
+  53          
+  54          
+C51 COMPILER V9.51   ASTEROID_BELT                                                         02/28/2025 18:45:56 PAGE 2   
+
+  55          // ASTEROID BELT CHARACTERS
+  56          // 0. Character (AB_PLAYER_HEAD)
+  57          // ----| ----- |----
+  58          //  000|       |0x00
+  59          //  000| 1     |0x10 
+  60          //  000| 1111  |0x1E
+  61          //  000| 11111 |0x1F
+  62          //  000| 1111  |0x1E
+  63          //  000| 1     |0x10
+  64          //  000|       |0x00
+  65          // ==================
+  66          // 1. Character (AB_PLAYER_TAIL) -> animated //ToDo
+  67          // ----| ----- |----
+  68          //  000|       |0x00
+  69          //  000|       |0x00 
+  70          //  000|     1 |0x01
+  71          //  000|    11 |0x03
+  72          //  000|     1 |0x01
+  73          //  000|       |0x00
+  74          //  000|       |0x00
+  75          // ==================
+  76          // 2. Character (AB_ASTEROID_ONE)
+  77          // ----| ----- |----
+  78          //  000|       |0x00
+  79          //  000|  11   |0x0C
+  80          //  000| 1111  |0x1E 
+  81          //  000| 11111 |0x1F
+  82          //  000| 11111 |0x1F
+  83          //  000|  11   |0x0C
+  84          //  000|       |0x00
+  85          // ==================
+  86          // 3. Character (AB_ASTEROID_TWO)
+  87          // ----| ----- |----
+  88          //  000|  111  |0x0E 
+  89          //  000| 1111  |0x1E 
+  90          //  000|  11   |0x0C
+  91          //  000|     1 |0x01
+  92          //  000| 1111  |0x1E
+  93          //  000| 11111 |0x1F
+  94          //  000|  1111 |0x0F
+  95          // ==================
+  96          // 4. Character (AB_EXPLOSION)
+  97          // ----| ----- |----
+  98          //  000| 1 1 1 |0x15
+  99          //  000|  111  |0x0E 
+ 100          //  000| 11 11 |0x1B
+ 101          //  000| 1 1 1 |0x15
+ 102          //  000| 11 11 |0x1B
+ 103          //  000|  111  |0x0E
+ 104          //  000| 1 1 1 |0x15
+ 105          // ==================
+ 106          
+ 107          // --- Main Game Loop ---
+ 108          void StartAsteroidBelt(void) {
+ 109   1              unsigned char data pressed_key;
+ 110   1              unsigned char data tick;
+ 111   1              unsigned char data game_speed; // the lower the faster
+ 112   1              tick = 0;
+ 113   1              AB_difficulty = 16;
+ 114   1              game_speed = 6;
+ 115   1              LoadCharacters(AB_STORAGE_ADDRESS, 2);
+ 116   1              LoadScreen(AB_STORAGE_ADDRESS, 2, 0, 1);
+C51 COMPILER V9.51   ASTEROID_BELT                                                         02/28/2025 18:45:56 PAGE 3   
+
+ 117   1              
+ 118   1              LCD_DisplayScreen();
+ 119   1              AB_GameLoop = 1;
+ 120   1              while (AB_GameLoop) {
+ 121   2                      // Each game tick:
+ 122   2                      // I - ask keyboard for pressed button
+ 123   2                      // II - move player character on screen
+ 124   2                      // III - move asteroids 
+ 125   2                      // IV - check if scored a point
+ 126   2                      // V - spawn new asteroids (clear the last column before)
+ 127   2                      // Then update LCD display
+ 128   2                      // steps III - V only happen when the move_tick variable reaches certain value -> difficulty
+ 129   2                      
+ 130   2                      // I
+ 131   2                      SendToSlave(KEYPAD_ADDRESS, 0x01);
+ 132   2                      WaitForResponse();
+ 133   2                      pressed_key = RECV;
+ 134   2                      
+ 135   2                      // II
+ 136   2                      Sleep(10); // configure for best performance
+ 137   2                      AB_MovePlayer(pressed_key);
+ 138   2                      
+ 139   2                      if (tick == game_speed) {
+ 140   3                              // III
+ 141   3                              AB_MoveAsteroids();
+ 142   3                              
+ 143   3                              // IV   
+ 144   3                              AB_CheckScore();
+ 145   3                              
+ 146   3                              // V
+ 147   3                              AB_SpawnAsteroids();
+ 148   3                              tick = 0;
+ 149   3                      } else {
+ 150   3                              // TODO: calculate actual delay
+ 151   3                              Sleep(4); // counteract the time it would take to do III-V
+ 152   3                      }
+ 153   2                      
+ 154   2                      if (!AB_difficulty && game_speed >= 1) {
+ 155   3                              game_speed--;
+ 156   3                              AB_difficulty = 16;
+ 157   3                      }
+ 158   2                      
+ 159   2                      tick++;
+ 160   2                      LCD_DisplayScreen();
+ 161   2              }
+ 162   1      }
+ 163          
+ 164          
+ 165          // --- Function Definitions ---
+ 166          void AB_MovePlayer(unsigned char key_pressed) {
+ 167   1              if (key_pressed == '2') {
+ 168   2                      AB_MovePlayerUp();
+ 169   2              } else if (key_pressed == '8') {
+ 170   2                      AB_MovePlayerDown();
+ 171   2              }
+ 172   1      }
+ 173          
+ 174          void AB_MovePlayerUp(void) {
+ 175   1              char data row;
+ 176   1              for (row = 0; row < 3; row++) {
+ 177   2                      if (Screen[( (row + 1) * 16 ) + 1] == AB_PLAYER_HEAD) {
+ 178   3                              Screen[( (row + 1) * 16 ) + 1] = AB_EMPTY;
+C51 COMPILER V9.51   ASTEROID_BELT                                                         02/28/2025 18:45:56 PAGE 4   
+
+ 179   3                              Screen[( (row + 1) * 16 ) + 0] = AB_EMPTY;
+ 180   3                              Screen[( (row + 0) * 16 ) + 1] = AB_PLAYER_HEAD;
+ 181   3                              Screen[( (row + 0) * 16 ) + 0] = AB_PLAYER_TAIL;
+ 182   3                      }
+ 183   2              }
+ 184   1      }
+ 185          
+ 186          void AB_MovePlayerDown(void) {
+ 187   1              unsigned char data row;
+ 188   1              for (row = 3; row > 0; row--) {
+ 189   2                      if (Screen[( (row - 1) * 16 ) + 1] == AB_PLAYER_HEAD) {
+ 190   3                              Screen[( (row - 1) * 16 ) + 1] = AB_EMPTY;
+ 191   3                              Screen[( (row - 1) * 16 ) + 0] = AB_EMPTY;
+ 192   3                              Screen[( (row + 0) * 16 ) + 1] = AB_PLAYER_HEAD;
+ 193   3                              Screen[( (row + 0) * 16 ) + 0] = AB_PLAYER_TAIL;
+ 194   3                      }
+ 195   2              }
+ 196   1      }
+ 197          
+ 198          void AB_MoveAsteroids(void) {
+ 199   1              unsigned char data col;
+ 200   1              unsigned char data row;
+ 201   1              for (row = 0; row < 4; row++) {
+ 202   2                      if (Screen[(row * 16) + 1] == AB_PLAYER_HEAD) {
+ 203   3                              if (Screen[(row * 16) + 2] != AB_EMPTY) {
+ 204   4                                      Screen[(row * 16) + 1] = AB_EXPLOSION;                          
+ 205   4                                      AB_GameLoop = 0;
+ 206   4                              }
+ 207   3                      } else {
+ 208   3                              Screen[(row * 16) + 0] = Screen[(row * 16) + 1];
+ 209   3                              Screen[(row * 16) + 1] = Screen[(row * 16) + 2];
+ 210   3                      }
+ 211   2                      
+ 212   2                      for (col = 2; col < 15; col++) {
+ 213   3                              Screen[(row * 16) + col] = Screen[(row * 16) + col + 1];
+ 214   3                      }
+ 215   2              }
+ 216   1      }
+ 217          
+ 218          void AB_CheckScore(void) {
+ 219   1              if ( 
+ 220   1                      (Screen[1]  == AB_PLAYER_HEAD &&  Screen[17] != AB_EMPTY) ||
+ 221   1                      (Screen[17] == AB_PLAYER_HEAD && (Screen[1]  != AB_EMPTY  || Screen[33] != AB_EMPTY)) ||
+ 222   1                      (Screen[33] == AB_PLAYER_HEAD && (Screen[17] != AB_EMPTY  || Screen[49] != AB_EMPTY)) ||
+ 223   1                  (Screen[49] == AB_PLAYER_HEAD &&  Screen[33] != AB_EMPTY)
+ 224   1                 ) 
+ 225   1              {       
+ 226   2                      SendToSlave(SCORES_ADDRESS, 0x01);
+ 227   2                      if (enable_haptics) SendToSlave(MOTORS_ADDRESS, 0x72);
+ 228   2                      if (enable_haptics) SendToSlave(MOTORS_ADDRESS, 0x71);
+ 229   2                      AB_difficulty--;
+ 230   2              }
+ 231   1      }
+ 232          
+ 233          void AB_SpawnAsteroids(void) {
+ 234   1              unsigned char data i;
+ 235   1              unsigned char data val;
+ 236   1              for (i = 0; i < 4; i++) {
+ 237   2                      val = Rand(TL1);
+ 238   2                      Screen[15 + 16*i] = AB_EMPTY;
+ 239   2                      Screen[15 + 16*i] = val % 5 == 0 ? (val % 2 == 0 ? AB_ASTEROID_ONE : AB_ASTEROID_TWO) : AB_EMPTY;
+ 240   2              }
+C51 COMPILER V9.51   ASTEROID_BELT                                                         02/28/2025 18:45:56 PAGE 5   
+
+ 241   1      }
+ 242          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    466    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

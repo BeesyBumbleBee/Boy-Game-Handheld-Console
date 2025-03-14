@@ -1,0 +1,16 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\7 Segment Display\segment_display.uvproj
+Project File Date:  02/28/2025
+
+<h2>Output:</h2>
+Rebuild target 'Target 1'
+compiling segdisp_main.c...
+compiling serialcomms_slave.c...
+linking...
+Program Size: data=32.2 xdata=2 const=197 code=712
+creating hex file from "..\..\Objects\7 Segment Display\segment_display"...
+"..\..\Objects\7 Segment Display\segment_display" - 0 Error(s), 0 Warning(s).

@@ -1,0 +1,70 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+C:\WAT\Systemy Wbudowane\Laboratoria\Projekt - Github\Source\LCD Display\lcd_display.uvproj
+Project File Date:  02/28/2025
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling storage_master.c...
+compiling asteroid_belt.c...
+compiling earth_defense.c...
+compiling lcd.c...
+compiling lcddisp_main.c...
+compiling serialcomms_master.c...
+linking...
+*** WARNING L26: DATA TYPES SLIGHTLY DIFFERENT
+    SYMBOL:  RECV
+    MODULE:  ..\..\Objects\LCD Display\storage_master.obj (STORAGE_MASTER)
+   DEFINED:  ..\..\Objects\LCD Display\serialcomms_master.obj (SERIALCOMMS_MASTER)
+*** WARNING L26: DATA TYPES SLIGHTLY DIFFERENT
+    SYMBOL:  RECV
+    MODULE:  ..\..\Objects\LCD Display\asteroid_belt.obj (ASTEROID_BELT)
+   DEFINED:  ..\..\Objects\LCD Display\serialcomms_master.obj (SERIALCOMMS_MASTER)
+*** WARNING L26: DATA TYPES SLIGHTLY DIFFERENT
+    SYMBOL:  RECV
+    MODULE:  ..\..\Objects\LCD Display\earth_defense.obj (EARTH_DEFENSE)
+   DEFINED:  ..\..\Objects\LCD Display\serialcomms_master.obj (SERIALCOMMS_MASTER)
+*** WARNING L25: DATA TYPES DIFFERENT
+    SYMBOL:  _Sleep
+    MODULE:  ..\..\Objects\LCD Display\lcd.obj (LCD)
+   DEFINED:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+*** WARNING L26: DATA TYPES SLIGHTLY DIFFERENT
+    SYMBOL:  RECV
+    MODULE:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+   DEFINED:  ..\..\Objects\LCD Display\serialcomms_master.obj (SERIALCOMMS_MASTER)
+Program Size: data=88.1 xdata=0 const=64 code=2844
+creating hex file from "..\..\Objects\LCD Display\lcd_display"...
+"..\..\Objects\LCD Display\lcd_display" - 0 Error(s), 5 Warning(s).
+Build target 'Target 1'
+compiling storage_master.c...
+compiling asteroid_belt.c...
+compiling earth_defense.c...
+compiling lcddisp_main.c...
+compiling serialcomms_master.c...
+linking...
+*** WARNING L26: DATA TYPES SLIGHTLY DIFFERENT
+    SYMBOL:  RECV
+    MODULE:  ..\..\Objects\LCD Display\asteroid_belt.obj (ASTEROID_BELT)
+   DEFINED:  ..\..\Objects\LCD Display\serialcomms_master.obj (SERIALCOMMS_MASTER)
+*** WARNING L26: DATA TYPES SLIGHTLY DIFFERENT
+    SYMBOL:  RECV
+    MODULE:  ..\..\Objects\LCD Display\earth_defense.obj (EARTH_DEFENSE)
+   DEFINED:  ..\..\Objects\LCD Display\serialcomms_master.obj (SERIALCOMMS_MASTER)
+*** WARNING L25: DATA TYPES DIFFERENT
+    SYMBOL:  _Sleep
+    MODULE:  ..\..\Objects\LCD Display\lcd.obj (LCD)
+   DEFINED:  ..\..\Objects\LCD Display\lcddisp_main.obj (LCDDISP_MAIN)
+Program Size: data=88.1 xdata=0 const=64 code=2796
+creating hex file from "..\..\Objects\LCD Display\lcd_display"...
+"..\..\Objects\LCD Display\lcd_display" - 0 Error(s), 3 Warning(s).
+Build target 'Target 1'
+compiling asteroid_belt.c...
+compiling earth_defense.c...
+compiling lcd.c...
+linking...
+Program Size: data=88.1 xdata=0 const=64 code=2796
+creating hex file from "..\..\Objects\LCD Display\lcd_display"...
+"..\..\Objects\LCD Display\lcd_display" - 0 Error(s), 0 Warning(s).

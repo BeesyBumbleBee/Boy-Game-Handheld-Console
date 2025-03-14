@@ -1,0 +1,239 @@
+C51 COMPILER V9.51   LCDDISP_MAIN                                                          02/28/2025 18:58:37 PAGE 1   
+
+
+C51 COMPILER V9.51, COMPILATION OF MODULE LCDDISP_MAIN
+OBJECT MODULE PLACED IN ..\..\Objects\LCD Display\lcddisp_main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE lcddisp_main.c OMF2 BROWSE DEBUG OBJECT(..\..\Objects\LCD Display\lcddisp_m
+                    -ain.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "addresses.h"
+   3          
+   4          
+   5          // --- Function Declarations --- 
+   6          unsigned char Rand(unsigned char seed);
+   7          void Sleep(unsigned int time);
+   8          void init(void);
+   9          void scoreScreen(unsigned char game_id);
+  10          void welcomeScreen(void);
+  11          
+  12          // lcd.c
+  13          extern void LCD_Init(void);
+  14          extern void LCD_Cursor (char row, char column);
+  15          extern void LCD_DisplayCharacterAt(char a_char, char row, char column);
+  16          extern void LCD_DisplayScreen (void);
+  17          extern void LCD_WriteControl (unsigned char cmd);
+  18          extern void LCD_WriteData (unsigned char cmd);
+  19          extern void LCD_NewCharacter (char *character, unsigned char addr);
+  20          
+  21          // serialcomms_master.c
+  22          extern void WaitForResponse(void);
+  23          extern void Send(char send_data, bit masked);
+  24          extern void SendToSlave(char slave_addr, char send_data);
+  25          extern void InitSerial(void);
+  26          
+  27          // storage_master.c
+  28          void LoadScreen(unsigned char slave_addr, unsigned char id, bit alt_scr, bit show_loading);
+  29          
+  30          // asteroid_belt.c
+  31          extern void StartAsteroidBelt(void);
+  32          
+  33          // earth_defense.c
+  34          extern void StartEarthDefense(void);
+  35          
+  36          
+  37          // --- Global Variables ---
+  38          bit enable_haptics;
+  39          
+  40          // lcd.c
+  41          extern char data Screen[];
+  42          
+  43          // serialcomms_master.c
+  44          extern unsigned char data RECV;
+  45          extern data bit RECF;
+  46          
+  47          
+  48          // --- Main Function ---
+  49          void main(void)
+  50          {
+  51   1              unsigned char SELECT;   
+  52   1              init();
+  53   1              LCD_Init();
+  54   1              SELECT = 0; // setting 0x80 bit means a select menu has to be loaded
+C51 COMPILER V9.51   LCDDISP_MAIN                                                          02/28/2025 18:58:37 PAGE 2   
+
+  55   1      
+  56   1              welcomeScreen();
+  57   1              Sleep(60);
+  58   1              SELECT = 0x80;
+  59   1              while (1) 
+  60   1              {
+  61   2                      if (SELECT & 0x80) {
+  62   3                              LoadScreen(MENUS_STORAGE_ADDRESS, 0, 1, 0);
+  63   3                              LCD_DisplayScreen();
+  64   3                              SELECT &= 0x7F;
+  65   3                      }
+  66   2                      
+  67   2                      LCD_DisplayCharacterAt(' ', 3, 1);
+  68   2                      LCD_DisplayCharacterAt(' ', 2, 1);
+  69   2                      if (SELECT & 0x0F) {
+  70   3                              LCD_DisplayCharacterAt('>', 3, 1);      
+  71   3                      } else {
+  72   3                              LCD_DisplayCharacterAt('>', 2, 1);      
+  73   3                      }
+  74   2                              
+  75   2                      SendToSlave(KEYPAD_ADDRESS, 0x01); // get user input 
+  76   2                      WaitForResponse();
+  77   2                      switch (RECV) 
+  78   2                      {
+  79   3                              case '2':
+  80   3                                      SELECT &= 0x80;
+  81   3                                      SELECT |= 0x00;
+  82   3                              break;
+  83   3                              case '8':
+  84   3                                      SELECT &= 0x80;
+  85   3                                      SELECT |= 0x01;
+  86   3                              break;
+  87   3                              case '0':
+  88   3                                      switch (SELECT & 0x0F) 
+  89   3                                      {
+  90   4                                              case 0:
+  91   4                                                      StartAsteroidBelt();
+  92   4                                                      SendToSlave(SCORES_ADDRESS, 0x02);
+  93   4                                              break;
+  94   4                                              case 1:
+  95   4                                                      StartEarthDefense();
+  96   4                                                      SendToSlave(SCORES_ADDRESS, 0x12);
+  97   4                                              break;
+  98   4                                      }
+  99   3                                      scoreScreen(SELECT & 0x0F);
+ 100   3                                      SELECT = 0x80;
+ 101   3                              break;
+ 102   3                      }
+ 103   2                      RECV = 0;
+ 104   2              }
+ 105   1      }
+ 106          
+ 107          
+ 108          // --- Function Definitions ---
+ 109          void Sleep(unsigned int time) // T0
+ 110          {       
+ 111   1              TR0 = 0;
+ 112   1              if (time < 60) {
+ 113   2                      TL0 = 0xFF - (time<<2);
+ 114   2                      TH0 = 0xFF - (time<<2);
+ 115   2                      TR0 = 1;
+ 116   2                      while (!TF0) {;}
+C51 COMPILER V9.51   LCDDISP_MAIN                                                          02/28/2025 18:58:37 PAGE 3   
+
+ 117   2                      TF0 = 0;
+ 118   2                      TR0 = 0;
+ 119   2              } else {
+ 120   2                      time /= 60;
+ 121   2                      while (time > 0)
+ 122   2                      {
+ 123   3                              TL0 &= 0x0;
+ 124   3                              TH0 &= 0x0;
+ 125   3                              TR0 = 1;
+ 126   3                              while (!TF0) {;}
+ 127   3                              TF0 = 0;
+ 128   3                              TR0 = 0;
+ 129   3                              time--;
+ 130   3                      }
+ 131   2              }
+ 132   1      }
+ 133          
+ 134          unsigned char Rand(unsigned char seed) 
+ 135          {
+ 136   1              seed = (seed << 5) ^ seed;
+ 137   1              return ((seed * (seed * seed * 41 + 61) + 113) ^ seed);
+ 138   1      }
+ 139          
+ 140          void init(void) 
+ 141          {
+ 142   1              enable_haptics = 1;
+ 143   1              
+ 144   1              EX1 = 1; // e/d INT0 interrupts
+ 145   1              IT1 = 1; // falling edge activation
+ 146   1              
+ 147   1              // Set T0 mode 1 -> sleep
+ 148   1              TMOD |= 0x01;
+ 149   1              
+ 150   1              // SET T1 mode 2 -> random number generator*
+ 151   1              TMOD |= 0x20;
+ 152   1              TH1 = 0x00;
+ 153   1              TR1 = 1;
+ 154   1              ET1 = 0;
+ 155   1              
+ 156   1              InitSerial();
+ 157   1              
+ 158   1              EA = 1; // enable interrupts
+ 159   1      }
+ 160          
+ 161          void scoreScreen(unsigned char game_id) 
+ 162          {
+ 163   1              LoadScreen(MENUS_STORAGE_ADDRESS, 1, 0, 0);
+ 164   1              LCD_DisplayScreen();
+ 165   1              SendToSlave(SCORES_ADDRESS, 0x03 | (game_id << 4));
+ 166   1              WaitForResponse();
+ 167   1              LCD_DisplayCharacterAt(RECV / 100 + '0', 2, 13);
+ 168   1              LCD_DisplayCharacterAt(RECV / 10  + '0', 2, 14);
+ 169   1              LCD_DisplayCharacterAt(RECV % 10  + '0', 2, 15);
+ 170   1              SendToSlave(SCORES_ADDRESS, 0x04 | (game_id << 4));
+ 171   1              WaitForResponse();
+ 172   1              LCD_DisplayCharacterAt(RECV / 100 + '0', 3, 13);
+ 173   1              LCD_DisplayCharacterAt(RECV / 10  + '0', 3, 14);
+ 174   1              LCD_DisplayCharacterAt(RECV % 10  + '0', 3, 15);
+ 175   1              RECV = 0;
+ 176   1                      
+ 177   1              while (RECV != '5') 
+ 178   1              {
+C51 COMPILER V9.51   LCDDISP_MAIN                                                          02/28/2025 18:58:37 PAGE 4   
+
+ 179   2                      SendToSlave(KEYPAD_ADDRESS, 0x01);
+ 180   2                      WaitForResponse();
+ 181   2              }
+ 182   1      }
+ 183          
+ 184          void welcomeScreen(void) {
+ 185   1              unsigned char i;
+ 186   1              const unsigned char code welcome_screen[] = {0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 
+             -0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D,
+ 187   1                                                                                                       0x20, 0x20, 0x20, 0x20, 0x42, 0x4F, 0x59, 0x20, 0x47, 0x41, 0x4D, 0x45, 0x20, 0x20, 0x20, 0x2
+             -0,
+ 188   1                                                                                                       0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3D, 0x3
+             -D,
+ 189   1                                                                                                       0x20, 0x53, 0x2E, 0x4F, 0x4C, 0x45, 0x20, 0x57, 0x41, 0x54, 0x20, 0x32, 0x30, 0x32, 0x35, 0x2
+             -0};
+ 190   1              for (i = 0; i < 64; i++) {
+ 191   2                      LCD_Cursor((i >> 4) + 1, (i % 16) + 1);
+ 192   2                      LCD_WriteData(*(welcome_screen + i));
+ 193   2              }               
+ 194   1      }
+ 195          
+ 196          
+ 197          // --- Interrupt Handlers ---
+ 198          void INT1_ISR () interrupt IE1_VECTOR
+ 199          {
+ 200   1              enable_haptics = 1;
+ 201   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    518    ----
+   CONSTANT SIZE    =     64    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

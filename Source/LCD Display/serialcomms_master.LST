@@ -1,0 +1,124 @@
+C51 COMPILER V9.51   SERIALCOMMS_MASTER                                                    02/28/2025 18:45:57 PAGE 1   
+
+
+C51 COMPILER V9.51, COMPILATION OF MODULE SERIALCOMMS_MASTER
+OBJECT MODULE PLACED IN ..\..\Objects\LCD Display\serialcomms_master.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE serialcomms_master.c OMF2 BROWSE DEBUG OBJECT(..\..\Objects\LCD Display\ser
+                    -ialcomms_master.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          
+   3          /*
+   4          sfr SCON    = 0x98;
+   5          sfr SBUF    = 0x99;
+   6          sfr T2CON   = 0xC8;
+   7          sfr TL2     = 0xCC;
+   8          sfr TH2     = 0xCD;
+   9          sfr RCAP2L  = 0xCA;
+  10          sfr RCAP2H  = 0xCB;
+  11          sbit ES   = 0xAC; 
+  12          sbit PS   = 0xBC;
+  13          sbit TR2  = 0xCA;
+  14          sbit RI   = 0x98;
+  15          sbit TI   = 0x99;
+  16          sbit RB8  = 0x9A;
+  17          sbit TB8  = 0x9B;
+  18          sbit P3_4 = 0xB4;
+  19          */
+  20          
+  21          // --- Function Declarations ---
+  22          void InitSerial(void);
+  23          void WaitForResponse(void);
+  24          void WaitForSend(void);
+  25          void SendToSlave(char slave_addr, char send_data);
+  26          void Serial_ISR();
+  27          
+  28          
+  29          // --- Global Variables ---
+  30          unsigned char data RECV;
+  31          bit RECF;
+  32          bit SENF;
+  33          
+  34          
+  35          // --- Function Definitions ---
+  36          void WaitForResponse(void) {
+  37   1              RECF = 0;
+  38   1              while (!RECF) {;}
+  39   1              RECF = 0;
+  40   1      }
+  41          
+  42          void WaitForSend(void) {
+  43   1              SENF = 0;
+  44   1              while (!SENF) {;}
+  45   1              SENF = 0;
+  46   1      }
+  47          
+  48          void SendToSlave(char slave_addr, char send_data) {
+  49   1              P3_4 = 1;
+  50   1              TI = 0;
+  51   1              TB8 = 1;
+  52   1              SBUF = slave_addr;
+  53   1              
+  54   1              WaitForSend();
+C51 COMPILER V9.51   SERIALCOMMS_MASTER                                                    02/28/2025 18:45:57 PAGE 2   
+
+  55   1              
+  56   1              P3_4 = 1;
+  57   1              TI = 0;
+  58   1              TB8 = 0;
+  59   1              SBUF = send_data;
+  60   1                      
+  61   1              WaitForSend();
+  62   1      }
+  63          
+  64          void InitSerial(void) {
+  65   1              RECF = 0;
+  66   1              SENF = 0;
+  67   1              RECV = 0;
+  68   1              // SERIAL PORT (uses T2)
+  69   1              P3_4 = 0;
+  70   1              SCON = 0xD0; // SM2 = 0 for master controller
+  71   1              T2CON = 0x30;
+  72   1              TH2 = RCAP2H = 0xFF;
+  73   1              TL2 = RCAP2L = 0xDC;
+  74   1              ES = 1;
+  75   1              TR2 = 1;
+  76   1              TI = 0;
+  77   1              PS = 1; 
+  78   1      }
+  79          
+  80          
+  81          
+  82          // --- Interrupt Handlers ---
+  83          void Serial_ISR() interrupt 4
+  84          {
+  85   1              if (TI) {
+  86   2                      SENF = 1;
+  87   2                      TI = 0;
+  88   2                      P3_4 = 0;
+  89   2              } else {
+  90   2                      RECF = 1;
+  91   2                      RECV = SBUF;
+  92   2                      RI = 0;
+  93   2              }
+  94   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     95    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

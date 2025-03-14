@@ -1,0 +1,204 @@
+C51 COMPILER V9.51   SEGDISP_MAIN                                                          02/28/2025 18:31:57 PAGE 1   
+
+
+C51 COMPILER V9.51, COMPILATION OF MODULE SEGDISP_MAIN
+OBJECT MODULE PLACED IN ..\..\Objects\7 Segment Display\segdisp_main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE segdisp_main.c OMF2 BROWSE DEBUG OBJECT(..\..\Objects\7 Segment Display\seg
+                    -disp_main.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #define ANIMATION_DELAY 25
+   3          
+   4          
+   5          // --- Function Declarations --- 
+   6          unsigned char getCharCode(unsigned char letter);
+   7          void setDisplay(unsigned char left, unsigned char right);       
+   8          void displayLetters(unsigned char left, unsigned char right);
+   9          void initScores(unsigned char* scores, unsigned char len);
+  10          void init(void);
+  11          void displayAnimation(void);
+  12          void sleep(void);
+  13          
+  14          void Timer1_ISR(void);
+  15          void INT0_ISR(void);
+  16          
+  17          // serialcomms_slave.c
+  18          extern void SendSlave(char data_send);
+  19          extern void InitSerial();
+  20          
+  21          // storage_slave.c      
+  22          void AccessStorage(unsigned char addr);
+  23          
+  24          
+  25          // --- Global Variables ---
+  26          unsigned char xdata right_segment _at_ 0xFD00; // 1st digit in seg Disp
+  27          unsigned char xdata left_segment  _at_ 0xFE00; // 2nd digit in seg Disp
+  28          unsigned char data  on_display[2];
+  29          unsigned char data  animation_select;
+  30          
+  31          // serialcomms_slave.c
+  32          extern unsigned char data RECV;
+  33          extern bit data RECF;
+  34          
+  35          // --- Global Constants ---
+  36          const unsigned char code CHAR_LOOKUP[] = {119, 124, 57, 94, 121, 113, 111, 118, 48, 30, 118, 56, 21, 84, 6
+             -3, 115, 103, 80, 109, 120, 62, 42, 28, 118, 110, 91, 63, 6, 91, 79, 102, 109, 125, 7, 127, 111};
+  37          const unsigned char code RADIX_LOOKUP[17] = "0123456789ABCDEF";
+  38          const unsigned char code ANIMATION_LOOKUP[] = 
+  39                  { 
+  40                          0x63, 0x5C, 0x00, 0x00, 0x63, 0x5C, 0x00, 0x00, 0x63, 0x5C, 0x00, 0x00, 0x63, 0x5C, 0x00, 0x00,
+  41                          0x61, 0x60, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x50, 0x58, 0x1c, 0x0e, 0x07, 0x23,
+  42                          0x30, 0x79, 0x4f, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x23, 0x62, 0x54, 0x1c, 0x08,
+  43                          0x39, 0x31, 0x29, 0x19, 0x38, 0x39, 0x39, 0x39, 0x39, 0x31, 0x29, 0x19, 0x38, 0x39, 0x39, 0x39,
+  44                          0x00, 0x00, 0x5C, 0x63, 0x00, 0x00, 0x5C, 0x63, 0x00, 0x00, 0x5C, 0x63, 0x00, 0x00, 0x5C, 0x63,
+  45                          0x00, 0x40, 0x42, 0x43, 0x23, 0x31, 0x38, 0x1c, 0x4c, 0x44, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,
+  46                          0x00, 0x00, 0x00, 0x00, 0x00, 0x30, 0x79, 0x4f, 0x06, 0x00, 0x01, 0x23, 0x62, 0x54, 0x1c, 0x08,
+  47                          0x07, 0x0F, 0x0F, 0x0F, 0x0F, 0x0E, 0x0D, 0x0B, 0x43, 0x53, 0x53, 0x53, 0x53, 0x52, 0x51, 0x13,
+  48                  };
+  49          
+  50          // --- Main function ---
+  51          void main(void)
+  52          {
+  53   1              unsigned char data score;
+C51 COMPILER V9.51   SEGDISP_MAIN                                                          02/28/2025 18:31:57 PAGE 2   
+
+  54   1              unsigned char data scores[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+             -0x00, 0x00, 0x00, 0x00};
+  55   1              init();
+  56   1              
+  57   1              score = 0;
+  58   1              displayLetters('0', '0');
+  59   1              while(1) 
+  60   1              {
+  61   2                      if (RECF) 
+  62   2                      {
+  63   3                              switch (RECV&0x0F) 
+  64   3                              {
+  65   4                                      case 0x01: // -> player scored
+  66   4                                              score++;
+  67   4                                              displayLetters(RADIX_LOOKUP[score/16], RADIX_LOOKUP[score%16]);
+  68   4                                      break;
+  69   4                                      case 0x02: // -> game over
+  70   4                                              if (scores[RECV>>4] < score) scores[RECV>>4] = score;
+  71   4                                              displayLetters('0', '0');
+  72   4                                      break;
+  73   4                                      case 0x03: // -> get current score (and clear it)
+  74   4                                              SendSlave(score);
+  75   4                                              score = 0;
+  76   4                                      break;
+  77   4                                      case 0x04: // -> get highscore
+  78   4                                              SendSlave(scores[RECV>>4]);
+  79   4                                      break;
+  80   4                              }
+  81   3                              RECV = 0;
+  82   3                              RECF = 0;
+  83   3                      }
+  84   2                      if (score == 0) displayAnimation();
+  85   2              }
+  86   1      }
+  87                  
+  88          
+  89          // --- Function Definitions ---
+  90          void setDisplay(unsigned char left, unsigned char right)
+  91          {
+  92   1              on_display[0] = left;
+  93   1              on_display[1] = right;
+  94   1      }
+  95          
+  96          void displayLetters(unsigned char left, unsigned char right)
+  97          {
+  98   1              unsigned char c1 = getCharCode(left);
+  99   1              unsigned char c2 = getCharCode(right);
+ 100   1              setDisplay(c1, c2);
+ 101   1      }
+ 102          
+ 103          unsigned char getCharCode(unsigned char letter)
+ 104          {
+ 105   1              if (letter < '0' || letter > 'Z') return 0;
+ 106   1              if (letter >= 'A') return CHAR_LOOKUP[letter-'A'];
+ 107   1              return CHAR_LOOKUP[letter-'0' + 26];
+ 108   1      }
+ 109          
+ 110          void sleep(void) {
+ 111   1              unsigned char i;
+ 112   1              unsigned char j;
+ 113   1              for (i = 0xF0; i > 0; i--) {
+ 114   2                      for(j = 0x4F; j > 0; j--) {
+C51 COMPILER V9.51   SEGDISP_MAIN                                                          02/28/2025 18:31:57 PAGE 3   
+
+ 115   3                              if (RECF) return;
+ 116   3                      }
+ 117   2              }
+ 118   1      }
+ 119          
+ 120          void displayAnimation(void)
+ 121          {       
+ 122   1              unsigned char i = 0;
+ 123   1              while (!RECF) 
+ 124   1              {
+ 125   2                      setDisplay(ANIMATION_LOOKUP[i + (16 * animation_select)], ANIMATION_LOOKUP[64 + i + (16 * animation_sele
+             -ct)]);
+ 126   2                      sleep();
+ 127   2                      i = (i + 1) % 16;
+ 128   2              }
+ 129   1              setDisplay(0,0);
+ 130   1      }
+ 131          
+ 132          
+ 133          void init(void) 
+ 134          {
+ 135   1              animation_select = 0;
+ 136   1              on_display[0] = 0;
+ 137   1              on_display[1] = 0;
+ 138   1              
+ 139   1              // INTERRUPTS
+ 140   1              EX0 = 1; // e/d INT0 interrupts
+ 141   1              ET1 = 1; // e/d T1 interrupts
+ 142   1              ES = 1;  // e/d Serial interrupts
+ 143   1              PS = 1;  // serial priority
+ 144   1      
+ 145   1              IT0 = 1; // 1 -> falling edge activation
+ 146   1      
+ 147   1              // SET T1 mode 2 -> display
+ 148   1              TMOD |= 0x20;
+ 149   1              TR1 = 1;
+ 150   1              
+ 151   1              InitSerial();
+ 152   1              
+ 153   1              EA = 1; // enable interrupts
+ 154   1      }
+ 155          
+ 156          
+ 157          // --- Interrupt Handlers ---
+ 158          void Timer1_ISR(void) interrupt TF1_VECTOR
+ 159          {
+ 160   1              left_segment  = on_display[0];
+ 161   1              right_segment = on_display[1];
+ 162   1      }
+ 163          
+ 164          void INT0_ISR(void) interrupt IE0_VECTOR
+ 165          {
+ 166   1              animation_select = (animation_select + 1 ) % 4;
+ 167   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    358    ----
+   CONSTANT SIZE    =    197    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      3      19
+C51 COMPILER V9.51   SEGDISP_MAIN                                                          02/28/2025 18:31:57 PAGE 4   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
